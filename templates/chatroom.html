@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>ChatRoom</title>
+
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='bootstrap.min.css') }}" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <style>
+      div.msg_bbl {
+        background-color: #ddd;
+        padding: 5px 10px;
+        border-radius: 10px;
+        color: #555;
+        margin-bottom: 5px;
+      }
+    </style>
+  </head>
+  <body>
+
+    <div class="text-center well"><b>Short Messages ChatRoom</b></div>
+
+    <div class="container">
+        <div class="row marketing">
+      <div class="col-sm-8">
+        <div class="no_message">
+          <h1 style='color: #ccc'>Inbox is Empty</h1>
+          <div class="message_holder"></div>
+        </div>
+      </div>
+      <div class="col-sm-4">
+        <form action="" method="POST">
+          <b>New Message!</span></b>
+          <div class="clearfix" style="margin-top: 5px;"></div>
+          <input type="text" class="username form-control" placeholder="User Name">
+          <div style="padding-top: 5px;"></div>
+          <input type="text" class="message form-control" placeholder="Messages">
+          <div style="padding-top: 5px;"></div>
+          <button type="submit" class="btn btn-primary"></span> Send</button>
+        </form>
+      </div>
+      </div>
+    </div>
+
+
+    <script src="static/173socket.io.min.js"></script>
+    <script src="static/js1124jquery.min.js"></script>
+    <script>
+      var socket = io.connect( 'http://' + document.domain + ':' + location.port )
+      socket.on( 'connect', function() {
+        socket.emit( 'my event', {
+          data: 'User Connected'
+        } )
+        var form = $( 'form' ).on( 'submit', function( e ) {
+          e.preventDefault()
+          let user_name = $( 'input.username' ).val()
+          let user_input = $( 'input.message' ).val()
+          socket.emit( 'my event', {
+            user_name : user_name,
+            message : user_input
+          } )
+          $( 'input.message' ).val( '' ).focus()
+        } )
+      } )
+
+      socket.on( 'my response', function( msg ) {
+        console.log( msg )
+        if( typeof msg.user_name !== 'undefined' ) {
+          $( 'h1' ).remove()
+          $( 'div.message_holder' ).append( '<div class="msg_bbl"><b style="color: #000">'+msg.user_name+'</b> '+msg.message+'</div>' )
+        }
+      } )
+    </script>
+  </body>
+</html>
